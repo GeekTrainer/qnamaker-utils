@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@types/promise": "^7.1.30",
+    "@types/restify": "^2.0.35",
+    "botbuilder": "^3.4.4",
+    "dotenv": "^2.0.0",
+    "restify": "^4.3.0"
+  }
+}
