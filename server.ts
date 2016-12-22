@@ -1,32 +1,33 @@
-import * as https from 'https';
+import https = require('https');
 
 export default class Server {
-    private static kbId = '';
-    private static key = '';
+    static getResponse(question: string, kbId:string, subscriptionKey:string) : Promise<any> {
+        return new Promise<string>((resolve, reject) => {
+            console.log('loading');
+            const postBody = JSON.stringify({ 'question': question });
 
+            const options = {
+                method: 'POST',
+                path: `/qnamaker/v1.0/knowledgebases/${kbId}/generateAnswer`,
+                host: 'westus.api.cognitive.microsoft.com',
+                headers: {
+                    'Content-Length': Buffer.byteLength(postBody),
+                    'Content-Type': 'application/json',
+                    'Ocp-Apim-Subscription-Key': subscriptionKey
+                }
+            };
 
-    static getResponse(question: string) {
-        const postBody = JSON.stringify({ 'question': question });
-
-        const options = {
-            method: 'POST',
-            path: `/qnamaker/v1.0/knowledgebases/${Server.kbId}/generateAnswer`,
-            host: 'westus.api.cognitive.microsoft.com',
-            headers: {
-                'Content-Length': Buffer.byteLength(postBody),
-                'Content-Type': 'application/json',
-                'Ocp-Apim-Subscription-Key': Server.key;
-            }
-        };
-
-        const req = https.request(options, (res) => {
-            let data = '';
-            res.on('data', (chunk) => data += chunk);
-            res.on('end', () => {
-                return Promise.resolve(JSON.parse(data));
+            const req = https.request(options, (res) => {
+                let data = '';
+                res.on('error', (e) => console.log(e));
+                res.on('data', (chunk) => data += chunk);
+                res.on('end', () => {
+                    console.log('finished');
+                    resolve(JSON.parse(data));
+                });
             });
+            req.write(postBody);
+            req.end();
         });
-        req.write(postBody);
-        req.end();
     }
 }
