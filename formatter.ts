@@ -1,12 +1,12 @@
 import * as builder from 'botbuilder';
 
 export default class Formatter {
-    static format(session: builder.Session, response: string) {
-        const messages = response.split('\n');
-        messages.forEach(async message => {
+    format(session: builder.Session, response: string) {
+        response.split('\n').forEach(async message => {
             session.sendTyping();
-            await Formatter.sleep();
-            session.send(message);
+            Formatter.sleep(message.length * 5).then(() => {
+                session.send(message);
+            });
         });
     }
 
